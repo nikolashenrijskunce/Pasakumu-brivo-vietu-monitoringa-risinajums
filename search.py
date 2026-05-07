@@ -3,8 +3,7 @@ import re
 
 def get_all_event_ids():
     with sync_playwright() as p:
-        browser = p.chromium.launch(channel="chrome")
-        # browser = p.chromium.launch()
+        browser = p.chromium.launch(headless=False)
         page = browser.new_page()
 
         page.goto("https://www.bilesuparadize.lv/lv/search?keywords=")
@@ -22,10 +21,6 @@ def get_all_event_ids():
     for i in range(len(event_ids)):
         event_ids[i]=event_ids[i].strip('",')
     event_ids = sorted(set(int(x) for x in event_ids))
-
-    for b in event_ids:
-        print(b)
-    print(len(event_ids))
 
     ##print(event_ids)
     return event_ids
