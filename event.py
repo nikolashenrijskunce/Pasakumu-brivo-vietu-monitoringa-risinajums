@@ -44,3 +44,17 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# iegust informaciju par visiem events un to norises laikiem
+# https://www.bilesuparadize.lv/api/venue/1589/event
+
+# iegust info par brivajam vietam un cenam
+# https://www.bilesuparadize.lv/api/event/159795/metadata
+
+# iegust vizualo auditorijas vietu izkartojumu
+# https://www1.bilesuparadize.lv/layouts/event-164863-.txt
+
+# uzraksti prieks visuala izkartojuma
+# https://www2.bilesuparadize.lv/layouts/event-164863-labels.json
+
+# laikam, lai iegutu birvas vietas vizualaja izkartojuma
