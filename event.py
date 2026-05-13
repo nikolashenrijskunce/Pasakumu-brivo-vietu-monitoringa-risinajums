@@ -8,6 +8,9 @@ def get_ticket_info(event_id: int):
 
     price_groups = data["price_groups"]
 
+    # TODO: jaiegust informaciju ar linku par auditorijas vizualizaciju
+    venue_labels = data["labels_json_url"]
+
     aggregated = {}
     for group in price_groups:
         price = group["price"]
@@ -29,6 +32,7 @@ def get_event_info(event_id: int):
     response.raise_for_status()
     data = response.json()
 
+    # TODO: jaiegust infromacija par bilesu tirgosanas laiku(sales_start, sales_end), aprakstu (main_description:lv), ilgumu (general_information:lv:duration), valodu (general_information:lv:language), norises vietas id (venue_id),
     event_name = data["performance"]["title"]
     event_date = data["date_time"]
 
@@ -36,6 +40,10 @@ def get_event_info(event_id: int):
 
     ##print(result)
     return result
+
+
+# TODO: izveidot funkciju, kas iegust info par norises vietam (nosaukums, adrese, etc)
+
 
 def main():
     get_event_info(159795)
@@ -45,16 +53,22 @@ def main():
 if __name__ == "__main__":
     main()
 
-# iegust informaciju par visiem events un to norises laikiem
+# iegust informaciju par visiem events un to norises laikiem no
 # https://www.bilesuparadize.lv/api/venue/1589/event
+# IEGUST: visas izrades, kas norisinas
+
+# iegust visadu informaciju par pasakumu
+# https://www.bilesuparadize.lv/api/event/164863
+# IEGUST: notikuma datums, bilesu pardosanas periods, nosaukums, atteli, apraksts, ilgums, valoda, norises vieta, koordinates, adrese
 
 # iegust info par brivajam vietam un cenam
 # https://www.bilesuparadize.lv/api/event/159795/metadata
+# IEGUST: links uz json dokumentu ar sedvietu vizualizacijas rakstiem, sedvietu cenas, brivo sedvietu skaits
 
 # iegust vizualo auditorijas vietu izkartojumu
 # https://www1.bilesuparadize.lv/layouts/event-164863-.txt
+# IEGUST: sedvietu izvietojuma vizualizacija svg fromata
 
 # uzraksti prieks visuala izkartojuma
 # https://www2.bilesuparadize.lv/layouts/event-164863-labels.json
-
-# laikam, lai iegutu birvas vietas vizualaja izkartojuma
+# IEGUST: apraksti vizualizacijai
