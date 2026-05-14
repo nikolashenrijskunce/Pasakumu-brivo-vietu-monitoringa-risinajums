@@ -1,17 +1,20 @@
 import requests
 
 def get_ticket_info(event_id: int):
+
+    # veic api izsaukumu bilesu paradizei, kas iegust JSON par bilesu kategorijam, cenam un skaitu
     url = f"https://www.bilesuparadize.lv/api/event/{event_id}/metadata"
     response = requests.get(url)
     response.raise_for_status()
     data = response.json()
 
-    price_groups = data["price_groups"]
-
-    # TODO: jaiegust informaciju ar linku par auditorijas vizualizaciju
+    # TODO: JAPARBAUDA jaiegust informaciju ar linku par auditorijas vizualizaciju
     venue_labels = data["labels_json_url"]
 
+    # izvellk bilesu informaciju no JSON faila
+    price_groups = data["price_groups"]
     aggregated = {}
+
     for group in price_groups:
         price = group["price"]
         count = group["count"]
@@ -19,12 +22,11 @@ def get_ticket_info(event_id: int):
             aggregated[price] = {"price": price, "available_seats": 0}
         aggregated[price]["available_seats"] += count
 
-
     results = sorted(aggregated.values(), key=lambda x: x["price"])
 
-    ##print(results)
-
     return results
+
+
 
 def get_event_info(event_id: int):
     url = f"https://www.bilesuparadize.lv/api/event/{event_id}"
@@ -32,26 +34,44 @@ def get_event_info(event_id: int):
     response.raise_for_status()
     data = response.json()
 
-    # TODO: jaiegust infromacija par bilesu tirgosanas laiku(sales_start, sales_end), aprakstu (main_description:lv), ilgumu (general_information:lv:duration), valodu (general_information:lv:language), norises vietas id (venue_id),
+    # TODO: JAPARBAUDA dati par notikumu
     event_name = data["performance"]["title"]
     event_date = data["date_time"]
+    event_sales_start = data["sales_start"]
+    event_sales_end = data["sales_end"]
+    event_description = data["main_description"]
+    event_duration = data["general_information"]
+    event_language = data["general_information"]
+    event_venue = data["hall"]["venue_id"]
+    # event_description = event_description
 
-    result = [event_id,event_name,event_date]
+    #TODO: JAPARBAUDA dati par koncertzali
+    venue_id = event_venue
+    venue_name = data["hall"]["title"]
+    venue_address = data["hall"]["address"]
+    venue_longitude = data["hall"]["venue"]["longitude"]
+    venue_latitude = data["hall"]["venue"]["latitude"]
 
-    ##print(result)
+
+    # result = [event_id,event_name,event_date, event_sales_start, event_sales_end, event_description]
+    result = type(event_description)
+    print(result)
     return result
 
 
-# TODO: izveidot funkciju, kas iegust info par norises vietam (nosaukums, adrese, etc)
-
 
 def main():
-    get_event_info(159795)
-    get_ticket_info(159795)
+    event_id = 0
+
+    get_event_info(event_id)
+    get_ticket_info(event_id)
+
 
 
 if __name__ == "__main__":
     main()
+
+
 
 # iegust informaciju par visiem events un to norises laikiem no
 # https://www.bilesuparadize.lv/api/venue/1589/event
