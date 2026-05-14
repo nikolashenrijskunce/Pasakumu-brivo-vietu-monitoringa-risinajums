@@ -9,6 +9,7 @@ conn = psycopg2.connect(
 )
 cur = conn.cursor()
 
+# TODO events date ari vajag pulkstena laiku
 # izpilda komandas, kas izveido tabulas
 cur.execute("""
 CREATE TABLE IF NOT EXISTS venues (

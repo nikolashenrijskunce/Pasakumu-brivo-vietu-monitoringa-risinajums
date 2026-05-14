@@ -1,5 +1,6 @@
 import requests
 
+# update veic biezi
 def get_ticket_info(event_id: int):
 
     # veic api izsaukumu bilesu paradizei, kas iegust JSON par bilesu kategorijam, cenam un skaitu
@@ -22,49 +23,60 @@ def get_ticket_info(event_id: int):
             aggregated[price] = {"price": price, "available_seats": 0}
         aggregated[price]["available_seats"] += count
 
+    # TODO: ir jaievieto datubaze un informacija ir visu laiku jaatjauno
+
     results = sorted(aggregated.values(), key=lambda x: x["price"])
 
     return results
 
 
-
+# update 1 reizi diena
 def get_event_info(event_id: int):
     url = f"https://www.bilesuparadize.lv/api/event/{event_id}"
-    response = requests.get(url)
+
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/136.0.0.0 Safari/537.36"
+        ),
+        "Accept": "application/json, text/plain, */*",
+        "Referer": "https://www.bilesuparadize.lv/",
+    }
+
+    response = requests.get(url, headers=headers)
     response.raise_for_status()
     data = response.json()
 
-    # TODO: JAPARBAUDA dati par notikumu
+    # dati par notikumu
     event_name = data["performance"]["title"]
     event_date = data["date_time"]
     event_sales_start = data["sales_start"]
     event_sales_end = data["sales_end"]
-    event_description = data["main_description"]
-    event_duration = data["general_information"]
-    event_language = data["general_information"]
+    event_description = data["performance"]["main_description"]["lv"]
+    event_language = data["performance"]["general_information"]["lv"]["language"]
     event_venue = data["hall"]["venue_id"]
-    # event_description = event_description
 
-    #TODO: JAPARBAUDA dati par koncertzali
+    # dati par koncertzali
     venue_id = event_venue
     venue_name = data["hall"]["title"]
     venue_address = data["hall"]["address"]
     venue_longitude = data["hall"]["venue"]["longitude"]
     venue_latitude = data["hall"]["venue"]["latitude"]
 
+    #TODO: dati jaievieto datubaze
 
-    # result = [event_id,event_name,event_date, event_sales_start, event_sales_end, event_description]
-    result = type(event_description)
+    result = [event_id,event_name,event_date, event_sales_start, event_sales_end, event_description]
     print(result)
     return result
 
 
 
 def main():
-    event_id = 0
+    event_id = 155961
 
     get_event_info(event_id)
-    get_ticket_info(event_id)
+    # get_ticket_info(event_id)
 
 
 
