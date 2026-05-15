@@ -43,6 +43,30 @@ CREATE TABLE IF NOT EXISTS tickets (
 );
 """)
 
+
+#TODO: tickets izmainit uz so
+'''CREATE TABLE tickets (
+    id SERIAL PRIMARY KEY,
+
+    event_id INTEGER,
+    category TEXT,
+    price NUMERIC,
+    count INTEGER,
+
+    checked_on TIMESTAMP DEFAULT NOW(),
+
+    UNIQUE(event_id, price),
+
+    FOREIGN KEY (event_id)
+    REFERENCES events(id)
+    ON DELETE CASCADE
+);'''
+
+
+
+
+
+
 # testesanai ievada informaciju tabula
 # cur.execute("""
 # INSERT INTO venues (

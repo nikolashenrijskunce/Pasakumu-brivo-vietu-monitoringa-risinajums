@@ -21,12 +21,12 @@ def get_all_event_ids():
         location_ids = re.findall(r'href="/lv/event/\d+"',body)
         browser.close()
 
-    # apstrada iegutos pasakuma vietu id
+    # apstrada iegutos pasakuma vietu id un parbeido to vertibu par integer
     for i in range(len(location_ids)):
         location_ids[i]=location_ids[i].strip('href="/lv/event/')
     location_ids = sorted(set(int(x) for x in location_ids))
 
-    # izvada iegutos id un to skaitu
+    # testesanai izvada iegutos id un to skaitu
     # for x in location_ids:
     #     print(x)
     # print(len(location_ids))
