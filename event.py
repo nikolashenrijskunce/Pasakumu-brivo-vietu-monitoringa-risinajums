@@ -1,7 +1,8 @@
 import psycopg2
 import requests
 
-# TODO: jasanem int list un tad javeic iteracijas ar to
+
+
 # update veic biezi
 def get_ticket_info(event_id):
     # define galveni, ko raksta api izsaukuma, lai apietu bot filter
@@ -54,16 +55,12 @@ def get_ticket_info(event_id):
                 tickets.count IS DISTINCT FROM EXCLUDED.count
                 OR
                 tickets.category IS DISTINCT FROM EXCLUDED.category;""",
-            (event_id, category, price, count))
+            (i, category, price, count))
 
             conn.commit()
     cur.close()
     conn.close()
 
-    # results = sorted(aggregated.values(), key=lambda x: x["price"])
-    # print(results)
-    #
-    # return results
 
 
 # update 1 reizi diena
@@ -136,7 +133,7 @@ def get_event_info(event_id):
         # ievieto datus par notikumiem datubaze
         cur.execute("""
             INSERT INTO events (id, title, date, sales_start, sales_end, description, language, venue_id)
-            VALUES (%s, %s, %s, %s, %s %s, %s, %s) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s) 
                 
             ON CONFLICT (id)
         
@@ -144,7 +141,7 @@ def get_event_info(event_id):
             title = EXCLUDED.title,
             date = EXCLUDED.date,
             sales_start = EXCLUDED.sales_start,
-            sales_end = EXCLUDED.sales_end
+            sales_end = EXCLUDED.sales_end,
             description = EXCLUDED.description,
             language = EXCLUDED.language,
             venue_id = EXCLUDED.venue_id
@@ -163,28 +160,10 @@ def get_event_info(event_id):
             events.language IS DISTINCT FROM EXCLUDED.language
             OR
             events.venue_id IS DISTINCT FROM EXCLUDED.venue_id;""",
-        (event_id, event_title, event_date, event_sales_start, event_sales_end, event_description, event_language, event_venue))
+        (i, event_title, event_date, event_sales_start, event_sales_end, event_description, event_language, event_venue))
         conn.commit()
     cur.close()
     conn.close()
-
-    # result = [event_id,event_title,event_date, event_sales_start, event_sales_end, event_description]
-    # print(result)
-    # return result
-
-
-
-# testesanai
-def main():
-    event_id = 155961
-
-    # get_event_info(event_id)
-    get_ticket_info(event_id)
-
-
-
-if __name__ == "__main__":
-    main()
 
 
 

@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS events (
     date TIMESTAMP,
     sales_start TIMESTAMP,
     sales_end TIMESTAMP,
-    description VARCHAR(10000),
+    description TEXT,
     language VARCHAR(50),
     venue_id INTEGER,
     FOREIGN KEY (venue_id) REFERENCES venues(id) ON DELETE CASCADE
@@ -47,32 +47,8 @@ CREATE TABLE IF NOT EXISTS tickets (
 
 
 
-# testesanai ievada informaciju tabula
-# cur.execute("""
-# INSERT INTO venues (
-#     id, name, address, longitude, latitude) VALUES (%s, %s, %s, %s, %s)""",
-# (249,'BTA Daugavas Stadions','Rīga, Augšiela 1', 56.953675, 24.157391)
-# )
-
-# izdzes visas izveidotas tabulas
-# cur.execute("""
-#             DROP TABLE IF EXISTS venues cascade;
-#             DROP TABLE IF EXISTS events cascade;
-#             DROP TABLE IF EXISTS tickets cascade;
-#             """)
-
 # izpilda izmainas
 conn.commit()
-
-# izvada visas rindas
-# cur.execute("""
-# SELECT * FROM venues;
-# """)
-#
-# rows = cur.fetchall()
-#
-# for row in rows:
-#     print(row)
 
 # beidz savienojumu
 cur.close()
