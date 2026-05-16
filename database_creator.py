@@ -9,7 +9,8 @@ conn = psycopg2.connect(
 )
 cur = conn.cursor()
 
-# TODO events date ari vajag pulkstena laiku
+
+
 # izpilda komandas, kas izveido tabulas
 cur.execute("""
 CREATE TABLE IF NOT EXISTS venues (
@@ -19,7 +20,7 @@ CREATE TABLE IF NOT EXISTS venues (
     longitude FLOAT,
     latitude FLOAT
 );
-    
+
 CREATE TABLE IF NOT EXISTS events (
     id INTEGER PRIMARY KEY,
     title VARCHAR(300),
@@ -39,31 +40,10 @@ CREATE TABLE IF NOT EXISTS tickets (
     price NUMERIC,
     count INTEGER,
     checked_on TIMESTAMP DEFAULT NOW(),
+    UNIQUE(event_id, price),
     FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE
 );
 """)
-
-
-#TODO: tickets izmainit uz so
-'''CREATE TABLE tickets (
-    id SERIAL PRIMARY KEY,
-
-    event_id INTEGER,
-    category TEXT,
-    price NUMERIC,
-    count INTEGER,
-
-    checked_on TIMESTAMP DEFAULT NOW(),
-
-    UNIQUE(event_id, price),
-
-    FOREIGN KEY (event_id)
-    REFERENCES events(id)
-    ON DELETE CASCADE
-);'''
-
-
-
 
 
 
