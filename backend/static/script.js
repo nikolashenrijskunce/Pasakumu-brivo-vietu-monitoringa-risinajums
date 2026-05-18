@@ -45,11 +45,17 @@ function sortTable(columnIndex) {
         {
             return Number(aText) - Number(bText);
         }
+
+        if (columnIndex === 1)
+        {
+            const aDate = new Date(aText);
+            const bDate = new Date(bText);
+            return aDate - bDate;
+        }
+
         // Text sorting
         return aText.localeCompare(bText);
-
     });
-
     // Re-add rows
     rows.forEach(row => row.remove());
     sortedRows.forEach(row => {table.appendChild(row);});

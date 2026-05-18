@@ -13,3 +13,11 @@ h1 {
 th {
     cursor: pointer;
 }
+
+.event-row {
+    transition: 0.2s ease;
+}
+
+.event-row:hover {
+    transform: scale(1.005);
+}

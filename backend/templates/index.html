@@ -12,41 +12,45 @@
     <!-- Meklesana -->
     <input type="text" id="searchInput" class="form-control mb-4" placeholder="Search events..." >
     <!-- Saraksts kvadratu formata -->
-    <table class="table table-striped table-hover shadow">
+    <div class="table-responsive">
+        <table class="table table-striped table-hover shadow">
 
-        <thead class="table-dark">
-            <tr>
-                <th onclick="sortTable(0)">Pasākuma nosaukums</th>
-                <th onclick="sortTable(1)">Norises vieta</th>
-                <th onclick="sortTable(2)">Biļešu skaits</th>
-                <th onclick="sortTable(3)">Cena</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody id="eventTable">
+            <thead class="table-dark">
+                <tr>
+                    <th onclick="sortTable(0)">Pasākuma nosaukums</th>
+                    <th onclick="sortTable(1)">Datums</th>
+                    <th onclick="sortTable(2)">Norises vieta</th>
+                    <th onclick="sortTable(3)">Biļešu skaits</th>
+                    <th onclick="sortTable(4)">Cena</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="eventTable">
 
-            {% for event in events %}
-            <tr class="event-row">
-                <td>{{ event.name }}</td>
-                <td>{{ event.city }}</td>
-                <td>
+                {% for event in events %}
+                <tr class="event-row">
+                    <td>{{ event.name }}</td>
+                    <td>{{ event.date[:10] }}</td>
+                    <td>{{ event.city }}</td>
+                    <td>
 
-                    {% if event.availability < 20 %}
-                        <span class="badge bg-danger">{{ event.availability }}</span>
-                    {% elif event.availability < 50 %}
-                        <span class="badge bg-warning text-dark">{{ event.availability }}</span>
-                    {% else %}
-                        <span class="badge bg-success">{{ event.availability }}</span>
-                    {% endif %}
+                        {% if event.availability < 20 %}
+                            <span class="badge bg-danger">{{ event.availability }}</span>
+                        {% elif event.availability < 50 %}
+                            <span class="badge bg-warning text-dark">{{ event.availability }}</span>
+                        {% else %}
+                            <span class="badge bg-success">{{ event.availability }}</span>
+                        {% endif %}
 
-                </td>
-                <td>€{{ event.price }}</td>
-                <td class="text-center"><a href="/event/{{ event.id }}" class="btn btn-sm btn-primary">Uzzināt vairāk</a></td>
-            </tr>
-            {% endfor %}
+                    </td>
+                    <td>€{{ "%.2f"|format(event.price) }}</td>
+                    <td class="text-center"><a href="/event/{{ event.id }}" class="btn btn-sm btn-primary">Uzzināt vairāk</a></td>
+                </tr>
+                {% endfor %}
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
 <script src="/static/script.js"></script>
 </body>
