@@ -1,6 +1,9 @@
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from database import get_connection
 
 # Izveido pprogrammas objektu
 app = FastAPI()
@@ -10,133 +13,32 @@ templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-# TODO: DELETE Fake data for now
-events = [
-    {
-        "id": 1,
-        "name": "Rock Concert",
-        "date": "2026-07-21 19:30:00",
-        "city": "Riga",
-        "availability": 120,
-        "price": 45
-    },
-    {
-        "id": 2,
-        "name": "Jazz Festival",
-        "date": "2026-08-06 18:00:00",
-        "city": "Tallinn",
-        "availability": 35,
-        "price": 60
-    },
-    {
-        "id": 3,
-        "name": "Tech Conference",
-        "date": "2026-11-13 09:00:00",
-        "city": "Vilnius",
-        "availability": 200,
-        "price": 120
-    },
-    {
-        "id": 4,
-        "name": "Food Truck Expo",
-        "date": "2026-05-18 12:00:00",
-        "city": "Kaunas",
-        "availability": 80,
-        "price": 25
-    },
-    {
-        "id": 5,
-        "name": "Indie Film Night",
-        "date": "2026-09-02 20:15:00",
-        "city": "Tartu",
-        "availability": 50,
-        "price": 18
-    },
-    {
-        "id": 6,
-        "name": "Startup Meetup",
-        "date": "2026-10-27 17:45:00",
-        "city": "Riga",
-        "availability": 150,
-        "price": 75
-    },
-    {
-        "id": 7,
-        "name": "Classical Music Gala",
-        "date": "2026-12-14 19:00:00",
-        "city": "Vilnius",
-        "availability": 90,
-        "price": 95
-    },
-    {
-        "id": 8,
-        "name": "Gaming Championship",
-        "date": "2026-06-09 10:30:00",
-        "city": "Tallinn",
-        "availability": 300,
-        "price": 40
-    },
-    {
-        "id": 9,
-        "name": "Art & Design Fair",
-        "date": "2026-08-30 14:00:00",
-        "city": "Liepaja",
-        "availability": 65,
-        "price": 22
-    },
-    {
-        "id": 10,
-        "name": "Winter Beer Festival",
-        "date": "2027-01-11 16:00:00",
-        "city": "Jurmala",
-        "availability": 140,
-        "price": 35
-    },
-    {
-        "id": 11,
-        "name": "Marathon Weekend",
-        "date": "2026-04-25 07:00:00",
-        "city": "Kaunas",
-        "availability": 500,
-        "price": 15
-    },
-    {
-        "id": 12,
-        "name": "Electronic Dance Night",
-        "date": "2026-07-19 22:00:00",
-        "city": "Riga",
-        "availability": 220,
-        "price": 55
-    },
-    {
-        "id": 13,
-        "name": "Photography Workshop",
-        "date": "2027-03-07 11:00:00",
-        "city": "Tallinn",
-        "availability": 28,
-        "price": 85
-    },
-    {
-        "id": 14,
-        "name": "Book Lovers Convention",
-        "date": "2026-10-16 13:30:00",
-        "city": "Vilnius",
-        "availability": 110,
-        "price": 20
-    },
-    {
-        "id": 15,
-        "name": "Summer Beach Party",
-        "date": "2026-08-01 21:00:00",
-        "city": "Jurmala",
-        "availability": 400,
-        "price": 30
-    }
-]
-
 
 @app.get("/")
 def home(request: Request):
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+
+    cur.execute("""
+    SELECT
+    e.id AS id,
+    e.title AS name,
+    e.date AS date,
+    v.address AS address,
+    SUM(t.count) AS availability,
+    MIN(t.price) AS min_price,
+    MAX(t.price) AS max_price
+
+    FROM events e
+    JOIN venues v ON v.id = e.venue_id
+    JOIN tickets t ON t.event_id = e.id
+    
+    GROUP BY e.id, e.title, e.date, v.address
+    ORDER BY e.date;""")
+
+    events = cur.fetchall()
+    cur.close()
+    conn.close()
 
     # dod index.html failu un sarakstu ar visiem notikumiem un to informacija
     return templates.TemplateResponse(
@@ -148,18 +50,55 @@ def home(request: Request):
 
 @app.get("/event/{event_id}")
 def event_details(request: Request, event_id: int):
+    conn = get_connection()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
 
-    # atrod informaciju par to event, kam atbilst doatis event_id
-    event = next(
-        (e for e in events if e["id"] == event_id),
-        None
-    )
+    cur.execute("""
+                SELECT e.id,
+                       e.title,
+                       e.description,
+                       e.date,
+                       e.sales_start,
+                       e.sales_end,
+                       e.language,
+
+                       v.name AS venue_name,
+                       v.address,
+                       v.latitude,
+                       v.longitude
+
+                FROM events e
+                         JOIN venues v ON v.id = e.venue_id
+
+                WHERE e.id = %s
+                """, (event_id,))
+
+    event = cur.fetchone()
+
+    cur.execute("""
+                SELECT category,
+                       price,
+                       count,
+                       checked_on
+
+                FROM tickets
+
+                WHERE event_id = %s
+
+                ORDER BY price
+                """, (event_id,))
+
+    tickets = cur.fetchall()
+
+    cur.close()
+    conn.close()
 
     return templates.TemplateResponse(
         request=request,
         name="event.html",
         context={
-            "event": event
+            "event": event,
+            "tickets": tickets
         }
     )
 

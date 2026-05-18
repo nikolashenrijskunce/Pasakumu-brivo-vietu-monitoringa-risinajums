@@ -21,3 +21,17 @@ th {
 .event-row:hover {
     transform: scale(1.005);
 }
+
+.event-name {
+    max-width: 250px;
+    width: 250px;
+    white-space: nowrap !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fixed-table {
+    table-layout: fixed;
+    width: 100%;
+}
